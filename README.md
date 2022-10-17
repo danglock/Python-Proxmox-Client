@@ -10,7 +10,7 @@
 ## Installation
 1. Download the repository :
 ```
-git clone https://github.com/danglock/Python-Proxmox-Client
+git clone https://github.com/danglock/Python-Proxmox-Client && cd Python-Proxmox-Client
 ```
 2. Install the requirements :
 ```
