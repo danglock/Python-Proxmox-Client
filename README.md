@@ -24,7 +24,7 @@ pip install -r requirements.txt
 
 You launch the script without argument to load the default profile.
 ```
-python3 .\main.py
+python3 main.py
 ```
 > Note : if default profile doesn't exists, the script will create it.
 
