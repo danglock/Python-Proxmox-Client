@@ -1,5 +1,5 @@
 # Python Proxmox Client
-
+A CLI Proxmox client to interract with Proxmox REST API
 
 ## Requirements
 
