@@ -184,8 +184,9 @@ def help():
     print(f"---{'-'*len(settings['host'])}---")
     print(f"|  {settings['host']}  |")
     print(f"---{'-'*len(settings['host'])}---\n")
-    print("[1] List VMs")
-    print("[2] List Containers")
+    print(f"- {len(vms)} VMs\n- {len(containers)} Containers\n")
+    print("[1] Virtual Machines")
+    print("[2] Containers")
 
 def NavHelp(inMenu = False):
     print("")
@@ -195,8 +196,8 @@ def NavHelp(inMenu = False):
 
 def MachineHelp():
     print("")
-    print("[1] Start    [3] Clone")
-    print("[2] Stop     [4] Edit")
+    print("[1] Start        [3] Reboot         [5] Clone")
+    print("[2] Shutdown     [4] Force Stop     [6] Edit ")
 
 def EditHelp():
     print("-------------")
@@ -245,7 +246,6 @@ while manual_launch:
         for vm in vms:
             count += 1
             VMstats = proxmox.nodes.get(f"{node['node']}/qemu/{vm}/status/current")
-
             print(f"[{count}] {VMstats['vmid']}.{VMstats['name']} -> {coloreStatus(VMstats['status'])}")
         NavHelp(True)
 
@@ -277,22 +277,31 @@ while manual_launch:
 
                     # Print VM stats
 
-                    print(colored("Name:  ", "yellow"), VMstats['name'])
-                    print(colored("Id:    ", "yellow"), VMstats['vmid'])
-                    print(colored("CPUs:  ", "yellow"), VMstats['cpus'])
-                    print(colored("Disk:  ", "yellow"), DiskSize)
-                    print(colored("Memory:", "yellow"), RamSize)
+                    print(colored("Name   : ", "yellow"), VMstats['name'], f"\t--> {coloreStatus(VMstats['status'])}")
+                    print(colored("Id     : ", "yellow"), VMstats['vmid'])
+                    print(colored("CPUs   : ", "yellow"), VMstats['cpus'])
+                    print(colored("Disk   : ", "yellow"), DiskSize)
+                    print(colored("Memory : ", "yellow"), RamSize)
 
                     MachineHelp()
                     NavHelp(True)
-                    VMmenu_choice = input("\nCommand : ")
+                    VMmenu_choice = input("\nSelection : ")
 
                     if VMmenu_choice == "1":
                         start = proxmox.nodes.post(f"{node['node']}/qemu/{VMid}/status/start")
                         print(start)
+                        time.sleep(2)
                     elif VMmenu_choice == "2":
+                        shutdown = proxmox.nodes.post(f"{node['node']}/qemu/{VMid}/status/shutdown")
+                        print(shutdown)
+                        time.sleep(2)
+                    elif VMmenu_choice == "3":
+                        reboot = proxmox.nodes.post(f"{node['node']}/qemu/{VMid}/status/reboot")
+                        print(reboot)
+                    elif VMmenu_choice == "4":
                         stop = proxmox.nodes.post(f"{node['node']}/qemu/{VMid}/status/stop")
                         print(stop)
+                        time.sleep(2)
                     elif VMmenu_choice == "X" or VMmenu_choice == "x":
                         exit()
                     elif VMmenu_choice == "R" or VMmenu_choice == "r":
@@ -300,7 +309,7 @@ while manual_launch:
                         help()
                         menu_vm = False
                         Menu1 = False
-                    elif VMmenu_choice == "3":
+                    elif VMmenu_choice == "5":
                         try:
                             clear()
                             print(colored("Copy of : ", "yellow"), VMstats['name'])
@@ -310,7 +319,7 @@ while manual_launch:
                         except:
                             print(colored("An error occured :(", "red"))
 
-                    elif VMmenu_choice == "4":
+                    elif VMmenu_choice == "6":
 
                         menu_edit = True
                         while menu_edit:
@@ -325,7 +334,7 @@ while manual_launch:
                                     print(delete)
                                     menu_edit = False
                                 except:
-                                    print(colored(":(", "red"))
+                                    print(colored("Error: ", "red"), "Unable to delete the VM")
                             elif edit_choice == "1":
                                 print(f"Enter the new name for {VMstats['name']}")
                                 name = input("Name : ")
@@ -376,7 +385,7 @@ while manual_launch:
 
         menu_vm = True
         while menu_vm:
-            menu_choice = input("\nCommand : ")
+            menu_choice = input("\nSelection : ")
             if menu_choice == "R" or menu_choice == "r":
                 clear()
                 help()
@@ -401,22 +410,31 @@ while manual_launch:
 
                     # Print VM stats
 
-                    print(colored("Name:  ", "yellow"), VMstats['name'])
-                    print(colored("Id:    ", "yellow"), VMstats['vmid'])
-                    print(colored("CPUs:  ", "yellow"), VMstats['cpus'])
-                    print(colored("Disk:  ", "yellow"), DiskSize)
-                    print(colored("Memory:", "yellow"), RamSize)
+                    print(colored("Name  : ", "yellow"), VMstats['name'], f"\t--> {coloreStatus(VMstats['status'])}")
+                    print(colored("Id    : ", "yellow"), VMstats['vmid'])
+                    print(colored("CPUs  : ", "yellow"), VMstats['cpus'])
+                    print(colored("Disk  : ", "yellow"), DiskSize)
+                    print(colored("Memory: ", "yellow"), RamSize)
 
                     MachineHelp()
                     NavHelp(True)
                     VMmenu_choice = input("\nCommand : ")
 
-                    if VMmenu_choice == "1":
+                    if VMmenu_choice == "1": # Start
                         start = proxmox.nodes.post(f"{node['node']}/lxc/{VMid}/status/start")
                         print(start)
-                    elif VMmenu_choice == "2":
+                        time.sleep(2) # Sleep to refresh status
+                    elif VMmenu_choice == "2": # Shutdown
+                        shutdown = proxmox.nodes.post(f"{node['node']}/lxc/{VMid}/status/shutdown")
+                        print(shutdown)
+                        time.sleep(2) # Sleep to refresh status
+                    elif VMmenu_choice == "3": # Reboot
+                        reboot = proxmox.nodes.post(f"{node['node']}/lxc/{VMid}/status/reboot")
+                        print(reboot)
+                    elif VMmenu_choice == "4": # Force Stop
                         stop = proxmox.nodes.post(f"{node['node']}/lxc/{VMid}/status/stop")
                         print(stop)
+                        time.sleep(2) # Sleep to refresh status
                     elif VMmenu_choice == "X" or VMmenu_choice == "x":
                         exit()
                     elif VMmenu_choice == "R" or VMmenu_choice == "r":
@@ -424,7 +442,7 @@ while manual_launch:
                         help()
                         menu_vm = False
                         Menu1 = False
-                    elif VMmenu_choice == "3":
+                    elif VMmenu_choice == "5":
                         try:
                             clear()
                             print(colored("Copy of : ", "yellow"), VMstats['name'])
@@ -434,7 +452,7 @@ while manual_launch:
                         except:
                             print(colored("An error occured :(", "red"))
 
-                    elif VMmenu_choice == "4":
+                    elif VMmenu_choice == "6":
 
                         menu_edit = True
                         while menu_edit:
@@ -445,16 +463,16 @@ while manual_launch:
 
                             if edit_choice == "D" or edit_choice == "d":
                                 try:
-                                    delete = proxmox.nodes.delete(f"{node['node']}/qemu/{VMid}")
+                                    delete = proxmox.nodes.delete(f"{node['node']}/lxc/{VMid}")
                                     print(delete)
                                     menu_edit = False
                                 except:
-                                    print(colored(":(", "red"))
+                                    print(colored("Error: ", "red"), "Unable to delete Container.")
                             elif edit_choice == "1":
                                 print(f"Enter the new name for {VMstats['name']}")
                                 name = input("Name : ")
 
-                                rename = proxmox.nodes.post(f"{node['node']}/qemu/{VMid}/config?name={name}")
+                                rename = proxmox.nodes.post(f"{node['node']}/lxc/{VMid}/config?name={name}")
 
                                 menu_edit = False
                             elif edit_choice == "x" or edit_choice == "x":
