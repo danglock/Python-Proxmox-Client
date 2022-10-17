@@ -11,10 +11,11 @@ A CLI Proxmox client to interract with Proxmox REST API
 ## Installation
 1. Download the repository :
 ```
-git clone https://github.com/danglock/Python-Proxmox-Client && cd Python-Proxmox-Client
+git clone https://github.com/danglock/Python-Proxmox-Client
 ```
 2. Install the requirements :
 ```
+cd Python-Proxmox-Client
 pip install -r requirements.txt
 ```
 
